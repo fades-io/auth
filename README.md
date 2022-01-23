@@ -41,8 +41,8 @@
 Ответ: информация о токене, код **200**
 ``` json
 {
-    "status": string,
-    "created": string,
+    "status": "string",
+    "created": "string",
     "expired": 3600
 }
 ```
