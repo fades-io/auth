@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  postrges:
+    image: postgres:14.1-alpine
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    env_file: .env
