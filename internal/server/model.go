@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -20,5 +21,7 @@ func (server *Server) Init() {
 // Запускаем сервер, слушаем порт
 func (server *Server) Run() {
 	fmt.Println("Запуск сервера на хосте")
-	log.Fatal(http.ListenAndServe("localhost:8080", server.Router))
+	host := os.Getenv("APP_HOST")
+	port := os.Getenv("APP_PORT")
+	log.Fatal(http.ListenAndServe(host + ":" + port, server.Router))
 }
