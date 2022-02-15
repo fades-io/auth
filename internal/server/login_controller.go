@@ -29,12 +29,12 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	user.Prepare()
 	err = user.Validate("login")
 	if err != nil {
-		log.Fatalf("Не удалось смапить json в domain модель: %v", err)
+		log.Fatalf("Не удалось провалидировать поля: %v", err)
 		return err
 	}
 	token, err := server.SignIn(user.Username, user.Password)
 	if err != nil {
-		log.Fatalf("Не удалось смапить json в domain модель: %v", err)
+		log.Fatalf("Не удалось создать токен: %v", err)
 		return err
 	}
 
@@ -48,8 +48,9 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (server *Server) SignIn(username, password string) (string, error) {
-	// TODO: получать пользователя из БД и проверять пароли
-	// var err error
-	// user := domain.UserLogin{}
-	return auth.CreateToken(0)
+	user, err := server.service.GetUser(username, password)
+	if err != nil {
+		return "", err
+	}
+	return auth.CreateToken(user.ID)
 }

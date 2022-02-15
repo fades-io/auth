@@ -9,7 +9,7 @@ type service struct {
 
 // Сервис для работы с БД
 type Service interface {
-	GetUser(username string) (*domain.User, error)
+	GetUser(username, password string) (*domain.User, error)
 }
 
 // Конструктор для создания сервиса
@@ -20,6 +20,6 @@ func NewService(storage Storage) Service {
 }
 
 // Получение пользователя по имени
-func (s *service) GetUser(username string) (*domain.User, error) {
-	return s.storage.GetUser(username)
+func (s *service) GetUser(username, password string) (*domain.User, error) {
+	return s.storage.GetUser(username, password)
 }

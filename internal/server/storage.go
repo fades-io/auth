@@ -4,5 +4,5 @@ import "github.com/ShiryaevNikolay/auth/internal/domain"
 
 // Методы, которые должны реализовывать БД
 type Storage interface {
-	GetUser(username string) (*domain.User, error)
+	GetUser(username, password string) (*domain.User, error)
 }
