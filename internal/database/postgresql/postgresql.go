@@ -3,7 +3,6 @@ package postgresql
 import (
 	"github.com/ShiryaevNikolay/auth/internal/domain"
 	"github.com/ShiryaevNikolay/auth/internal/server"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -27,10 +26,6 @@ func (postgres *postgresDB) GetUser(username, password string) (*domain.User, er
 	if err != nil {
 		return nil, err
 	}
-	
-	err = domain.VerifyPassword(user.Password, password)
-	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		return nil, err
-	}
+
 	return &user, nil
 }
