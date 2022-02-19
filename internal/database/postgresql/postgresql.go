@@ -19,7 +19,7 @@ func New(db *gorm.DB) server.Storage {
 }
 
 // Получение пользователя по имени
-func (postgres *postgresDB) GetUser(username, password string) (*domain.User, error) {
+func (postgres *postgresDB) GetUser(username string) (*domain.User, error) {
 	user := domain.User{}
 	
 	err := postgres.db.Debug().Table("users").Model(user).Where("username = ?", username).Take(&user).Error
@@ -28,4 +28,13 @@ func (postgres *postgresDB) GetUser(username, password string) (*domain.User, er
 	}
 
 	return &user, nil
+}
+
+// Создание токена
+func (postgres *postgresDB) CreateToken(token *domain.Token) (error) {
+	err := postgres.db.Debug().Table("tokens").Model(domain.Token{}).Create(token).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

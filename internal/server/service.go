@@ -9,7 +9,8 @@ type service struct {
 
 // Сервис для работы с БД
 type Service interface {
-	GetUser(username, password string) (*domain.User, error)
+	GetUser(username string) (*domain.User, error)
+	CreateToken(token *domain.Token) (error)
 }
 
 // Конструктор для создания сервиса
@@ -20,6 +21,11 @@ func NewService(storage Storage) Service {
 }
 
 // Получение пользователя по имени
-func (s *service) GetUser(username, password string) (*domain.User, error) {
-	return s.storage.GetUser(username, password)
+func (s *service) GetUser(username string) (*domain.User, error) {
+	return s.storage.GetUser(username)
+}
+
+// Создание токена в БД
+func (s *service) CreateToken(token *domain.Token) (error) {
+	return s.storage.CreateToken(token)
 }

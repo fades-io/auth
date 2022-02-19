@@ -42,8 +42,9 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
+// Получает пользователя и создает токен
 func (server *Server) SignIn(username, password string) (string, error) {
-	user, err := server.service.GetUser(username, password)
+	user, err := server.service.GetUser(username)
 	if err != nil {
 		return "", apperror.New(err, "Пользователя с таким логином/паролем не существует", err.Error(), http.StatusNotFound)
 	}
@@ -53,5 +54,21 @@ func (server *Server) SignIn(username, password string) (string, error) {
 		return "", apperror.New(err, "Неверный пароль", err.Error(), http.StatusUnauthorized)
 	}
 
-	return auth.CreateToken(user.ID)
+	token, err := auth.CreateToken(user.ID)
+	if err != nil {
+		return "", apperror.SystemError(err)
+	}
+
+	tokenModel := domain.Token{
+		Value:   token,
+		Status:  "Created",
+		UserID:  user.ID,
+	}
+
+	err = server.service.CreateToken(&tokenModel)
+	if err != nil {
+		return "", apperror.SystemError(err)
+	}
+
+	return token, nil
 }

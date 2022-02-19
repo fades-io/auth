@@ -9,11 +9,13 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// Сущность сервера
 type Server struct {
 	service Service
 	Router *httprouter.Router
 }
 
+// Инициализация сервера
 func (server *Server) Init(storage Storage) {
 	server.service = NewService(storage)
 

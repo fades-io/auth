@@ -8,7 +8,7 @@ import (
 )
 
 // Создание токена
-func CreateToken(userId uint32) (string, error) {
+func CreateToken(userId uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["user_id"] = userId

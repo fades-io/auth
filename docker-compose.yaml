@@ -8,7 +8,10 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     env_file: .env
     volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
       - db_data:${DB_DATA}
+    healthcheck:
+      test: "exit 0"
 
 volumes:
   db_data:

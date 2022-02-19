@@ -37,10 +37,11 @@ func (user *UserLogin) Validate(action string) error {
 }
 
 var (
-	ErrBadFormat = errors.New("invalid format")
+	ErrBadFormat = errors.New("Неверный формат")
 	emailRegexp  = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
+// Валидация почты
 func ValidateFormat(email string) error {
 	if !emailRegexp.MatchString(email) {
 		return ErrBadFormat

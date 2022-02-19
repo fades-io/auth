@@ -1,8 +1,11 @@
 package server
 
-import "github.com/ShiryaevNikolay/auth/internal/domain"
+import (
+	"github.com/ShiryaevNikolay/auth/internal/domain"
+)
 
 // Методы, которые должны реализовывать БД
 type Storage interface {
-	GetUser(username, password string) (*domain.User, error)
+	GetUser(username string) (*domain.User, error)
+	CreateToken(token *domain.Token) (error)
 }
