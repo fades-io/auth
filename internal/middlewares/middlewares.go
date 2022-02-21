@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ShiryaevNikolay/auth/internal/apperror"
+	"github.com/ShiryaevNikolay/auth/internal/utils"
 )
 
 type appHandler func(w http.ResponseWriter, r *http.Request) error
@@ -21,15 +22,8 @@ func SetHeadersMiddleware(h appHandler) http.HandlerFunc {
 				Смотрим, ошибка наша, т.е. AppError или какая-то другая
 			*/
 			if errors.As(err, &appErr) {
-				if errors.Is(err, apperror.ErrNotFound) {
-					w.WriteHeader(http.StatusNotFound)
-					w.Write(apperror.ErrNotFound.Marshal())
-					return
-				}
-
-				err = err.(*apperror.AppError)
-				w.WriteHeader(http.StatusBadRequest)
-				w.Write(appErr.Marshal())
+				appErr := err.(*apperror.AppError)
+				utils.ResponseError(w, appErr)
 				return
 			}
 

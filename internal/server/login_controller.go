@@ -8,6 +8,7 @@ import (
 	"github.com/ShiryaevNikolay/auth/internal/apperror"
 	"github.com/ShiryaevNikolay/auth/internal/auth"
 	"github.com/ShiryaevNikolay/auth/internal/domain"
+	"github.com/ShiryaevNikolay/auth/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -44,8 +45,9 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	server.logger.Infoln("Конвертация данных в JSON")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(token)
+	err = utils.ResponseOk(w, domain.Token{
+		Value:   token,
+	})
 	if err != nil {
 		server.logger.Errorf("Ошибка конвертации данных в JSON: %v", err)
 		return apperror.SystemError(err)
