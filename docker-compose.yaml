@@ -25,6 +25,8 @@ services:
       test: "exit 0"
     networks:
       - api_network
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
 
 volumes:
   db_data:

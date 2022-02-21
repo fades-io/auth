@@ -1,6 +1,8 @@
 package server
 
-import "github.com/ShiryaevNikolay/auth/internal/domain"
+import (
+	"github.com/ShiryaevNikolay/auth/internal/domain"
+)
 
 // Сущность, которая содержит в себе интерфейс для работы с БД
 type service struct {
@@ -11,6 +13,7 @@ type service struct {
 type Service interface {
 	GetUser(username string) (*domain.User, error)
 	CreateToken(token *domain.Token) (error)
+	UpdateStatusAllTokens(userId uint, token, status string) error
 }
 
 // Конструктор для создания сервиса
@@ -28,4 +31,9 @@ func (s *service) GetUser(username string) (*domain.User, error) {
 // Создание токена в БД
 func (s *service) CreateToken(token *domain.Token) (error) {
 	return s.storage.CreateToken(token)
+}
+
+// Обновление статуса у всех токенов
+func (s *service) UpdateStatusAllTokens(userId uint, token, status string) error {
+	return s.storage.UpdateStatusAllTokens(userId, token, status)
 }

@@ -6,6 +6,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	tokensTable = "tokens"
+)
+
 // Обертка над gorm.DB
 type postgresDB struct {
 	db *gorm.DB
@@ -32,7 +36,16 @@ func (postgres *postgresDB) GetUser(username string) (*domain.User, error) {
 
 // Создание токена
 func (postgres *postgresDB) CreateToken(token *domain.Token) (error) {
-	err := postgres.db.Debug().Table("tokens").Model(domain.Token{}).Create(token).Error
+	err := postgres.db.Debug().Table(tokensTable).Model(domain.Token{}).Create(token).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Обновление статуса у всех токенов
+func (postgres *postgresDB) UpdateStatusAllTokens(userId uint, token, status string) error {
+	err := postgres.db.Debug().Table(tokensTable).Model(domain.Token{}).Where("user_id = ?", userId).Where("token <> ?", token).Update("token_status", status).Error
 	if err != nil {
 		return err
 	}

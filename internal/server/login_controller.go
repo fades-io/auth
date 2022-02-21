@@ -91,5 +91,19 @@ func (server *Server) SignIn(username, password string) (string, error) {
 		return "", apperror.SystemError(err)
 	}
 
+	err = server.SetDisabledAllTokens(user.ID, token)
+	if err != nil {
+		return "", nil
+	}
+
 	return token, nil
+}
+
+// Устанавливает всем токенам для данного пользователя статус "Disabled"
+func (server *Server) SetDisabledAllTokens(userId uint, token string) error {
+	err := server.service.UpdateStatusAllTokens(userId, token, "Disabled")
+	if err != nil {
+		return apperror.SystemError(err)
+	}
+	return nil
 }

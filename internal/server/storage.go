@@ -8,4 +8,5 @@ import (
 type Storage interface {
 	GetUser(username string) (*domain.User, error)
 	CreateToken(token *domain.Token) (error)
+	UpdateStatusAllTokens(userId uint, token, status string) error
 }
