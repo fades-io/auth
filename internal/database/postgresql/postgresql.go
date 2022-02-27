@@ -51,3 +51,13 @@ func (postgres *postgresDB) UpdateStatusAllTokens(userId uint, token, status str
 	}
 	return nil
 }
+
+// Получение id пользователя по токену
+func (postgres *postgresDB) GetUserIdByToken(token string) (*domain.Token, error) {
+	tokenModel := domain.Token{}
+	err := postgres.db.Debug().Table(tokensTable).Model(tokenModel).Where("token = ?", token).Where("token_status = 'Created'").Take(&tokenModel).Error
+	if err != nil {
+		return nil, err
+	}
+	return &tokenModel, nil
+}
