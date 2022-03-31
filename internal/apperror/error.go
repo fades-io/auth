@@ -1,6 +1,11 @@
 package apperror
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/ShiryaevNikolay/auth/internal/res"
+)
 
 // Кастомная ошибка, которая передается в json вместе с сообщением
 type AppError struct {
@@ -39,5 +44,5 @@ func New(err error, message, developerMessage string, code int) *AppError {
 
 // Любую ошибку оборачиваем в системную
 func SystemError(err error) *AppError {
-	return New(err, "Внутренняя ошибка сервера", err.Error(), 418)
+	return New(err, res.ErrorSystem, err.Error(), http.StatusTeapot)
 }

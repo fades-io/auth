@@ -9,6 +9,7 @@ import (
 	"github.com/ShiryaevNikolay/auth/internal/auth"
 	"github.com/ShiryaevNikolay/auth/internal/domain"
 	"github.com/ShiryaevNikolay/auth/internal/utils"
+	"github.com/ShiryaevNikolay/auth/internal/res"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +19,7 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		server.logger.Errorf("Ошибка получения Body: %v", err)
-		return apperror.New(err, "Не удалось считать тело запроса", err.Error(), http.StatusUnprocessableEntity)
+		return apperror.New(err, res.ErrorReadBody, err.Error(), http.StatusUnprocessableEntity)
 	}
 
 	server.logger.Infoln("Конвертация Body в модель UserLogin")
@@ -26,7 +27,7 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		server.logger.Errorf("Ошибка конвертации Body в UserModel: %v", err)
-		return apperror.New(err, "Не удалось преобразовать JSON в модель", err.Error(), http.StatusUnprocessableEntity)
+		return apperror.New(err, res.ErrorConvertBodyToJSON, err.Error(), http.StatusUnprocessableEntity)
 	}
 
 	server.logger.Infoln("Подготовка и валидация пользовательских данных")
@@ -34,7 +35,7 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	err = user.Validate("login")
 	if err != nil {
 		server.logger.Errorf("Ошибка валидации пользовательских данных: %v", err)
-		return apperror.New(err, "Неверный формат данных. Проверьте, корректно ли введен логин/пароль", err.Error(), http.StatusBadRequest)
+		return apperror.New(err, res.ErrorInvalidDataFormat, err.Error(), http.StatusBadRequest)
 	}
 
 	server.logger.Infoln("Авторизация пользователя")
@@ -61,14 +62,14 @@ func (server *Server) SignIn(username, password string) (string, error) {
 	user, err := server.service.GetUser(username)
 	if err != nil {
 		server.logger.Errorf("Не удалось получить пользователя: %v", err)
-		return "", apperror.New(err, "Пользователя с таким логином/паролем не существует", err.Error(), http.StatusNotFound)
+		return "", apperror.New(err, res.ErrorUserNotFound, err.Error(), http.StatusNotFound)
 	}
 
 	server.logger.Infoln("Проверка пароля пользователя")
 	err = domain.VerifyPassword(user.Password, password)
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		server.logger.Errorf("Пароли пользователя не совпадают: %v", err)
-		return "", apperror.New(err, "Неверный пароль", err.Error(), http.StatusUnauthorized)
+		return "", apperror.New(err, res.ErrorInvalidPassword, err.Error(), http.StatusUnauthorized)
 	}
 
 	server.logger.Infoln("Создание токена для пользователя")
