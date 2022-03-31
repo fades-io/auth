@@ -18,9 +18,7 @@ func SetHeadersMiddleware(h appHandler) http.HandlerFunc {
 		var appErr *apperror.AppError
 		err := h(w, r)
 		if err != nil {
-			/*
-				Смотрим, ошибка наша, т.е. AppError или какая-то другая
-			*/
+			// Смотрим, ошибка наша (т.е. AppError) или какая-то другая
 			if errors.As(err, &appErr) {
 				appErr := err.(*apperror.AppError)
 				utils.ResponseError(w, appErr)
@@ -28,9 +26,7 @@ func SetHeadersMiddleware(h appHandler) http.HandlerFunc {
 			}
 
 			w.WriteHeader(http.StatusTeapot)
-			/*
-				Таким образом получаем все системные ошибки обернутые в наш AppError
-			*/
+			// Таким образом получаем все системные ошибки обернутые в наш AppError
 			w.Write(apperror.SystemError(err).Marshal())
 		}
 	}

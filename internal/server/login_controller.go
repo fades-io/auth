@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Обработка запрос для входа пользователя
+// Обработка запроса входа пользователя
 func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	server.logger.Infoln("Получение Body запроса")
 	body, err := ioutil.ReadAll(r.Body)
@@ -81,7 +81,7 @@ func (server *Server) SignIn(username, password string) (string, error) {
 
 	tokenModel := domain.Token{
 		Value:   token,
-		Status:  "Created",
+		Status:  domain.Created,
 		UserID:  user.ID,
 	}
 
@@ -102,7 +102,7 @@ func (server *Server) SignIn(username, password string) (string, error) {
 
 // Устанавливает всем токенам для данного пользователя статус "Disabled"
 func (server *Server) SetDisabledAllTokens(userId uint, token string) error {
-	err := server.service.UpdateStatusAllTokens(userId, token, "Disabled")
+	err := server.service.UpdateStatusAllTokens(userId, token, domain.Disabled)
 	if err != nil {
 		return apperror.SystemError(err)
 	}
