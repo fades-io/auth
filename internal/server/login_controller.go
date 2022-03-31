@@ -35,7 +35,7 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 	err = user.Validate("login")
 	if err != nil {
 		server.logger.Errorf("Ошибка валидации пользовательских данных: %v", err)
-		return apperror.New(err, res.ErrorInvalidDataFormat, err.Error(), http.StatusBadRequest)
+		return err
 	}
 
 	server.logger.Infoln("Авторизация пользователя")

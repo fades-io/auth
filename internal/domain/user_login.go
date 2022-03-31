@@ -5,6 +5,8 @@ import (
 	"html"
 	"regexp"
 	"strings"
+
+	"github.com/ShiryaevNikolay/auth/internal/res"
 )
 
 // Данные пользователя для авторизации
@@ -24,10 +26,10 @@ func (user *UserLogin) Validate(action string) error {
 	switch strings.ToLower(action) {
 	case "login":
 		if user.Username == "" {
-			return errors.New("Требуется логин")
+			return errors.New(res.ErrorLoginRequired)
 		}
 		if user.Password == "" {
-			return errors.New("Требуется пароль")
+			return errors.New(res.ErrorPasswordRequired)
 		}
 		return nil
 	default:
@@ -37,7 +39,7 @@ func (user *UserLogin) Validate(action string) error {
 }
 
 var (
-	ErrBadFormat = errors.New("Неверный формат")
+	ErrBadFormat = errors.New(res.ErrorBadFormat)
 	emailRegexp  = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 

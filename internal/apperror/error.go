@@ -15,7 +15,7 @@ type AppError struct {
 	Code             int    `json:"code,omitempty"`
 }
 
-// метод для соответствия интерфейсу Error{}
+// Метод для соответствия интерфейсу Error{}
 func (appError *AppError) Error() string {
 	return appError.Message
 }
@@ -42,7 +42,7 @@ func New(err error, message, developerMessage string, code int) *AppError {
 	}
 }
 
-// Любую ошибку оборачиваем в системную
+// Системная ошибка
 func SystemError(err error) *AppError {
 	return New(err, res.ErrorSystem, err.Error(), http.StatusTeapot)
 }
