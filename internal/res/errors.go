@@ -10,4 +10,5 @@ const (
 	ErrorLoginRequired =  "требуется логин"
 	ErrorPasswordRequired =  "требуется пароль"
 	ErrorBadFormat =  "неверный формат"
+	ErrorAccessIsDenied = "Доступ запрещен"
 )
