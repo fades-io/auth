@@ -11,5 +11,8 @@ type User struct {
 
 // Проверка пароля пользователя
 func VerifyPassword(hashedPassword, password string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return bcrypt.CompareHashAndPassword(
+		[]byte(hashedPassword), 
+		[]byte(password),
+	)
 }

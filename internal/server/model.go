@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/ShiryaevNikolay/auth/internal/res"
 	"github.com/ShiryaevNikolay/auth/pkg/logging"
 	"github.com/julienschmidt/httprouter"
 )
@@ -23,7 +24,7 @@ func (server *Server) Init(storage Storage, logger *logging.Logger) {
 
 	server.Router = httprouter.New()
 
-	logger.Infoln("Инициализация роутеров")
+	logger.Infoln(res.LogRoutersInit)
 	server.initRouters()
 }
 
@@ -31,6 +32,6 @@ func (server *Server) Init(storage Storage, logger *logging.Logger) {
 func (server *Server) Run() {
 	host := os.Getenv("APP_HOST")
 	port := os.Getenv("APP_PORT")
-	server.logger.Infof("Сервер запустился на хосте: %s:%s", host, port)
+	server.logger.Infof(res.LogServerStartedOnHost, host, port)
 	log.Fatal(http.ListenAndServe(host+":"+port, server.Router))
 }
