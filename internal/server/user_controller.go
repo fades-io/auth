@@ -13,10 +13,10 @@ func (server *Server) GetUserId(w http.ResponseWriter, r *http.Request) error {
 	token := r.Header.Get("Token")
 
 	server.logger.Infoln("Получение id пользователя")
-	tokenModel, err := server.service.GetUserIdByToken(token)
+	tokenModel, err := server.service.GetToken(token)
 	if err != nil {
 		server.logger.Errorf("Не удалось найти пользователя с этим токеном", err)
-		return apperror.New(err, "Доступ запрещен", err.Error(), http.StatusForbidden)
+		return apperror.New(err, "Доступ запрещен", http.StatusForbidden)
 	}
 
 	server.logger.Infoln("Конвертация данных в JSON")
