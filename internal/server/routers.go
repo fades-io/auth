@@ -11,5 +11,9 @@ const (
 )
 
 func (server *Server) initRouters() {
-	server.Router.HandlerFunc(http.MethodPost, userLoginURL, middlewares.SetHeadersMiddleware(server.Login))
+	server.Router.HandlerFunc(
+		http.MethodPost, 
+		userLoginURL, 
+		middlewares.SetHeadersMiddleware(server.Login),
+	)
 }
