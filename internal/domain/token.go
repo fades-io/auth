@@ -9,3 +9,9 @@ type Token struct {
 	Status  string `json:"token_status,omitempty" gorm:"column:token_status"`
 	UserID  uint   `json:"user_id,omitempty" gorm:"column:user_id"`
 }
+
+// Статусы для токена
+const (
+	Created = "Created"
+	Disabled = "Disabled"
+)

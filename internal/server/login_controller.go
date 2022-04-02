@@ -9,47 +9,58 @@ import (
 	"github.com/ShiryaevNikolay/auth/internal/auth"
 	"github.com/ShiryaevNikolay/auth/internal/domain"
 	"github.com/ShiryaevNikolay/auth/internal/utils"
+	"github.com/ShiryaevNikolay/auth/internal/res"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Обработка запрос для входа пользователя
+// Обработка запроса входа пользователя
 func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
-	server.logger.Infoln("Получение Body запроса")
+	server.logger.Infoln(res.LogGettingBodyRequest)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		server.logger.Errorf("Ошибка получения Body: %v", err)
-		return apperror.New(err, "Не удалось считать тело запроса", err.Error(), http.StatusUnprocessableEntity)
+		server.logger.Errorf(res.LogErrorGettingBody, err)
+		return apperror.New(
+			err, 
+			res.ErrorReadBody, 
+			err.Error(), 
+			http.StatusUnprocessableEntity,
+		)
 	}
 
-	server.logger.Infoln("Конвертация Body в модель UserLogin")
+	server.logger.Infoln(res.LogConvertBodyToUserLogin)
 	user := domain.UserLogin{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		server.logger.Errorf("Ошибка конвертации Body в UserModel: %v", err)
-		return apperror.New(err, "Не удалось преобразовать JSON в модель", err.Error(), http.StatusUnprocessableEntity)
+		server.logger.Errorf(res.LogErrorConvertingBotyToUserLogin, err)
+		return apperror.New(
+			err, 
+			res.ErrorConvertBodyToJSON, 
+			err.Error(), 
+			http.StatusUnprocessableEntity,
+		)
 	}
 
-	server.logger.Infoln("Подготовка и валидация пользовательских данных")
+	server.logger.Infoln(res.LogPreparationAndValidationOfUserData)
 	user.Prepare()
 	err = user.Validate("login")
 	if err != nil {
-		server.logger.Errorf("Ошибка валидации пользовательских данных: %v", err)
-		return apperror.New(err, "Неверный формат данных. Проверьте, корректно ли введен логин/пароль", err.Error(), http.StatusBadRequest)
-	}
-
-	server.logger.Infoln("Авторизация пользователя")
-	token, err := server.SignIn(user.Username, user.Password)
-	if err != nil {
-		server.logger.Errorf("Ошибка авторизации пользователя: %v", err)
+		server.logger.Errorf(res.LogErrorValidationOfUserData, err)
 		return err
 	}
 
-	server.logger.Infoln("Конвертация данных в JSON")
+	server.logger.Infoln(res.LogUserAuthorization)
+	token, err := server.SignIn(user.Username, user.Password)
+	if err != nil {
+		server.logger.Errorf(res.LogErrorUserAuthorization, err)
+		return err
+	}
+
+	server.logger.Infoln(res.LogConvertDataToJSON)
 	err = utils.ResponseOk(w, domain.Token{
 		Value:   token,
 	})
 	if err != nil {
-		server.logger.Errorf("Ошибка конвертации данных в JSON: %v", err)
+		server.logger.Errorf(res.LogErrorConvertDataToJSON, err)
 		return apperror.SystemError(err)
 	}
 	return nil
@@ -57,37 +68,47 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 
 // Получает пользователя и создает токен
 func (server *Server) SignIn(username, password string) (string, error) {
-	server.logger.Infoln("Получение пользователя из БД")
+	server.logger.Infoln(res.LogGettingUserFromDB)
 	user, err := server.service.GetUser(username)
 	if err != nil {
-		server.logger.Errorf("Не удалось получить пользователя: %v", err)
-		return "", apperror.New(err, "Пользователя с таким логином/паролем не существует", err.Error(), http.StatusNotFound)
+		server.logger.Errorf(res.LogErrorGetUser, err)
+		return "", apperror.New(
+			err, 
+			res.ErrorUserNotFound, 
+			err.Error(), 
+			http.StatusNotFound,
+		)
 	}
 
-	server.logger.Infoln("Проверка пароля пользователя")
+	server.logger.Infoln(res.LogCheckUserPassword)
 	err = domain.VerifyPassword(user.Password, password)
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
-		server.logger.Errorf("Пароли пользователя не совпадают: %v", err)
-		return "", apperror.New(err, "Неверный пароль", err.Error(), http.StatusUnauthorized)
+		server.logger.Errorf(res.LogUserPasswordDoNotMatch, err)
+		return "", apperror.New(
+			err, 
+			res.ErrorInvalidPassword, 
+			err.Error(), 
+			http.StatusUnauthorized,
+		)
 	}
 
-	server.logger.Infoln("Создание токена для пользователя")
+	server.logger.Infoln(res.LogGenerateTokenForUser)
 	token, err := auth.CreateToken(user.ID)
 	if err != nil {
-		server.logger.Errorf("Ошибка создания токена: %v", err)
+		server.logger.Errorf(res.LogErrorCreateToken, err)
 		return "", apperror.SystemError(err)
 	}
 
 	tokenModel := domain.Token{
 		Value:   token,
-		Status:  "Created",
+		Status:  domain.Created,
 		UserID:  user.ID,
 	}
 
-	server.logger.Infoln("Создание токена в БД")
+	server.logger.Infoln(res.LogCreateTokenInDB)
 	err = server.service.CreateToken(&tokenModel)
 	if err != nil {
-		server.logger.Errorf("Ошибка создания токена в БД: %v", err)
+		server.logger.Errorf(res.LogErrorCreateTokenInDB, err)
 		return "", apperror.SystemError(err)
 	}
 
@@ -101,7 +122,7 @@ func (server *Server) SignIn(username, password string) (string, error) {
 
 // Устанавливает всем токенам для данного пользователя статус "Disabled"
 func (server *Server) SetDisabledAllTokens(userId uint, token string) error {
-	err := server.service.UpdateStatusAllTokens(userId, token, "Disabled")
+	err := server.service.UpdateStatusAllTokens(userId, token, domain.Disabled)
 	if err != nil {
 		return apperror.SystemError(err)
 	}

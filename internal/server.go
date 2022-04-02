@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ShiryaevNikolay/auth/internal/database/postgresql"
+	"github.com/ShiryaevNikolay/auth/internal/res"
 	"github.com/ShiryaevNikolay/auth/internal/server"
 	"github.com/ShiryaevNikolay/auth/pkg/logging"
 	"github.com/tinrab/retry"
@@ -27,16 +28,16 @@ type DbConfig struct {
 
 // Создание и запуск сервера
 func Run(logger *logging.Logger) {
-	logger.Infoln("Получение конфигурации для БД")
+	logger.Infoln(res.LogGetConfigForDB)
 	dbConfig := GetDbConfig()
 
-	logger.Infoln("Получение БД")
+	logger.Infoln(res.LogGetDB)
 	storage := GetDB(dbConfig, logger)
 
-	logger.Infoln("Инициализация сервера")
+	logger.Infoln(res.LogServerInit)
 	srv.Init(storage, logger)
 
-	logger.Infoln("Запуск сервера")
+	logger.Infoln(res.LogServerStart)
 	srv.Run()
 }
 
@@ -57,17 +58,28 @@ func GetDB(dbConfig *DbConfig, logger *logging.Logger) server.Storage {
 	var storage server.Storage
 
 	retry.ForeverSleep(5*time.Second, func(attempt int) error {
-		logger.Infof("Попытка подключения к БД: %d\n", attempt)
+		logger.Infof(res.LogAttemptedToConnectToDB, attempt)
 		if dbConfig.driver == "postgres" {
-			dsn := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", dbConfig.host, dbConfig.port, dbConfig.name, dbConfig.user, dbConfig.password)
+			dsn := fmt.Sprintf(
+				"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", 
+				dbConfig.host, 
+				dbConfig.port, 
+				dbConfig.name, 
+				dbConfig.user, 
+				dbConfig.password,
+			)
 
-			logger.Infoln("Подключение к БД")
+			logger.Infoln(res.LogConnectToDB)
 			gormDB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 			if err != nil {
-				logger.Fatalf("Не получилось присоединиться к БД, используя драйвер: %s; Ошибка: %s\n", dbConfig.driver, err)
+				logger.Fatalf(
+					res.LogEnableToConnectToDBUsingDriver, 
+					dbConfig.driver, 
+					err,
+				)
 				return err
 			} else {
-				logger.Infof("База данных %s подключена\n", dbConfig.driver)
+				logger.Infof(res.LogDbIsConnected, dbConfig.driver)
 			}
 			storage = postgresql.New(gormDB)
 			return nil
