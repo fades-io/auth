@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/ShiryaevNikolay/auth/internal"
-	"github.com/ShiryaevNikolay/auth/internal/res/logs"
+	"github.com/ShiryaevNikolay/auth/internal/res"
 	"github.com/ShiryaevNikolay/auth/pkg/logging"
 	"github.com/joho/godotenv"
 )
