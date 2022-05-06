@@ -14,6 +14,7 @@ type Service interface {
 	GetUser(username string) (*domain.User, error)
 	CreateToken(token *domain.Token) (error)
 	UpdateStatusAllTokens(userId uint, token, status string) error
+	GetToken(token string) (*domain.Token, error)
 }
 
 // Конструктор для создания сервиса
@@ -36,4 +37,9 @@ func (s *service) CreateToken(token *domain.Token) (error) {
 // Обновление статуса у всех токенов
 func (s *service) UpdateStatusAllTokens(userId uint, token, status string) error {
 	return s.storage.UpdateStatusAllTokens(userId, token, status)
+}
+
+// Получение токена
+func (s *service) GetToken(token string) (*domain.Token, error) {
+	return s.storage.GetToken(token)
 }

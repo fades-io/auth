@@ -7,10 +7,17 @@ import (
 )
 
 const (
-	userLoginURL = "/user/login"
+	userURL = "/user"
+	userIdURL = userURL + "/id"
+	userLoginURL = userURL + "/login"
 )
 
 func (server *Server) initRouters() {
+	server.Router.HandlerFunc(
+		http.MethodGet, 
+		userIdURL, 
+		middlewares.SetHeadersMiddleware(server.GetUserId),
+	)
 	server.Router.HandlerFunc(
 		http.MethodPost, 
 		userLoginURL, 

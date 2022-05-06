@@ -25,8 +25,17 @@ func New(db *gorm.DB) server.Storage {
 // Получение пользователя по имени
 func (postgres *postgresDB) GetUser(username string) (*domain.User, error) {
 	user := domain.User{}
-	
-	err := postgres.db.Debug().Table("users").Model(user).Where("username = ?", username).Take(&user).Error
+
+	err := postgres.db.Debug().Table(
+		"users",
+	).Model(
+		user,
+	).Where(
+		"username = ?",
+		username,
+	).Take(
+		&user,
+	).Error
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +44,14 @@ func (postgres *postgresDB) GetUser(username string) (*domain.User, error) {
 }
 
 // Создание токена
-func (postgres *postgresDB) CreateToken(token *domain.Token) (error) {
-	err := postgres.db.Debug().Table(tokensTable).Model(domain.Token{}).Create(token).Error
+func (postgres *postgresDB) CreateToken(token *domain.Token) error {
+	err := postgres.db.Debug().Table(
+		tokensTable,
+	).Model(
+		domain.Token{},
+	).Create(
+		token,
+	).Error
 	if err != nil {
 		return err
 	}
@@ -45,9 +60,43 @@ func (postgres *postgresDB) CreateToken(token *domain.Token) (error) {
 
 // Обновление статуса у всех токенов
 func (postgres *postgresDB) UpdateStatusAllTokens(userId uint, token, status string) error {
-	err := postgres.db.Debug().Table(tokensTable).Model(domain.Token{}).Where("user_id = ?", userId).Where("token <> ?", token).Update("token_status", status).Error
+	err := postgres.db.Debug().Table(
+		tokensTable,
+	).Model(
+		domain.Token{},
+	).Where(
+		"user_id = ?",
+		userId,
+	).Where(
+		"token <> ?",
+		token,
+	).Update(
+		"token_status",
+		status,
+	).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+// Получение id пользователя по токену
+func (postgres *postgresDB) GetToken(token string) (*domain.Token, error) {
+	tokenModel := domain.Token{}
+	err := postgres.db.Debug().Table(
+		tokensTable,
+	).Model(
+		tokenModel,
+	).Where(
+		"token = ?",
+		token,
+	).Where(
+		"token_status = 'Created'",
+	).Take(
+		&tokenModel,
+	).Error
+	if err != nil {
+		return nil, err
+	}
+	return &tokenModel, nil
 }
