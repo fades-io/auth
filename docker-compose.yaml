@@ -1,9 +1,35 @@
 version: '3.9'
 
 services:
-  postrges:
+  golang_server:
+    build:
+      context: .
+    restart: always
+    env_file: .env
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    depends_on:
+      - db
+    networks:
+      - api_network
+
+  db:
     image: postgres:14.1-alpine
     container_name: postgresql
-    ports:
-      - "5432:5432"
+    restart: always
     env_file: .env
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:${DB_DATA}
+    healthcheck:
+      test: "exit 0"
+    networks:
+      - api_network
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+
+volumes:
+  db_data:
+
+networks:
+  api_network:
