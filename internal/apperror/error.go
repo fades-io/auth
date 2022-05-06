@@ -33,20 +33,16 @@ func (appError *AppError) Marshal() []byte {
 }
 
 // Создает кастомную ошибку
-func New(err error, message string, code int) *AppError {
+func New(err error, message, developerMessage string, code int) *AppError {
 	return &AppError{
 		Err:              err,
 		Message:          message,
-		DeveloperMEssage: err.Error(),
+		DeveloperMEssage: developerMessage,
 		Code:             code,
 	}
 }
 
 // Системная ошибка
 func SystemError(err error) *AppError {
-	return New(
-		err, 
-		res.ErrorSystem,
-		http.StatusTeapot,
-	)
+	return New(err, res.ErrorSystem, err.Error(), http.StatusTeapot)
 }

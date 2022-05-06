@@ -31,7 +31,4 @@ const (
 	LogErrorCreateToken = "Ошибка создания токена: %v"
 	LogCreateTokenInDB = "Создание токена в БД"
 	LogErrorCreateTokenInDB = "Ошибка создания токена в БД: %v"
-	LogGetTokenFromHeader = "Получение токена из Header"
-	LogGetUserId = "Получение id пользователя"
-	LogCouldNotFindUserWithThisToken = "Не удалось найти пользователя с этим токеном"
 )

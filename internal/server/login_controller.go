@@ -21,7 +21,8 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 		server.logger.Errorf(res.LogErrorGettingBody, err)
 		return apperror.New(
 			err, 
-			res.ErrorReadBody,
+			res.ErrorReadBody, 
+			err.Error(), 
 			http.StatusUnprocessableEntity,
 		)
 	}
@@ -33,7 +34,8 @@ func (server *Server) Login(w http.ResponseWriter, r *http.Request) error {
 		server.logger.Errorf(res.LogErrorConvertingBotyToUserLogin, err)
 		return apperror.New(
 			err, 
-			res.ErrorConvertBodyToJSON,
+			res.ErrorConvertBodyToJSON, 
+			err.Error(), 
 			http.StatusUnprocessableEntity,
 		)
 	}
@@ -72,7 +74,8 @@ func (server *Server) SignIn(username, password string) (string, error) {
 		server.logger.Errorf(res.LogErrorGetUser, err)
 		return "", apperror.New(
 			err, 
-			res.ErrorUserNotFound,
+			res.ErrorUserNotFound, 
+			err.Error(), 
 			http.StatusNotFound,
 		)
 	}
@@ -83,7 +86,8 @@ func (server *Server) SignIn(username, password string) (string, error) {
 		server.logger.Errorf(res.LogUserPasswordDoNotMatch, err)
 		return "", apperror.New(
 			err, 
-			res.ErrorInvalidPassword,
+			res.ErrorInvalidPassword, 
+			err.Error(), 
 			http.StatusUnauthorized,
 		)
 	}

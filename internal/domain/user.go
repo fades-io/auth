@@ -4,9 +4,9 @@ import "golang.org/x/crypto/bcrypt"
 
 // Модель пользователя, которую получаем из БД
 type User struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
+	ID       uint
+	Username string
+	Password string
 }
 
 // Проверка пароля пользователя
